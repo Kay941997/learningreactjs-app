@@ -8,6 +8,7 @@ import ComponentUseMemo from "./components/useMemo/ComponentUseMemo";
 import ComponentUseCallback from './components/useCallback/ComponentUseCallback';
 import ComponentReactMemo from "./components/reactMemo/ComponentReactMemo";
 import ComponentUseRef from "./components/useRef/ComponentUseRef";
+import ComponentUseReducer from './components/useReducer/ComponentUseReducer';
 
 const TODO_APP_LOCAL_STORAGE_KEY = 'TODO_APP';
 
@@ -77,16 +78,18 @@ function App() {
 
       <TodoList todoList={todoList} onCheckBtnClick={onCheckBtnClick} /> 
 
-      <ComponentUseStateUseEffect></ComponentUseStateUseEffect>
-      {/* ReactJS Không dùng <ExampleClass></ExampleClass> */}
+      {/* <ComponentUseStateUseEffect></ComponentUseStateUseEffect> */}
+      {/* Không dùng <ExampleClass></ExampleClass> */}
 
-      <ComponentUseMemo></ComponentUseMemo>
+      {/* <ComponentUseMemo></ComponentUseMemo> */}
 
-      <ComponentUseCallback></ComponentUseCallback>
+      {/* <ComponentUseCallback></ComponentUseCallback> */}
 
-      <ComponentReactMemo></ComponentReactMemo>
+      {/* <ComponentReactMemo></ComponentReactMemo> */}
 
-      <ComponentUseRef></ComponentUseRef>
+      {/* <ComponentUseRef></ComponentUseRef> */}
+
+      <ComponentUseReducer></ComponentUseReducer>
     </>
   )
 }

@@ -1,7 +1,7 @@
 import React from 'react'
 
 function ChildComponentReactMemo() {
-    console.log('Child Component React.Memo - render')
+    console.log('child component React.Memo - render')
     return (
         <p>Child Component React.Memo</p>
     )

@@ -4,7 +4,7 @@ import ChildComponentUseCallback from './ChildComponentUseCallback';
 export default function ComponentUseCallback() {
     const [users, setUsers] = useState([]);
     
-    console.log('Component React.useCallback - render')
+    console.log('parent component useCallback - render')
 
     // const getData = (type) => { //!không useCallback sinh ra cả child commentsCallback(chứa function của parent) và parent usersCallback
     //     return fetch(`https://reqres.in/api/${type}`);

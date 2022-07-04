@@ -14,7 +14,7 @@ function Counter() { //!custom function làm component để tối ưu hóa ko s
 }
 
 export default function ComponentReactMemo() { //!React.Memo (khác hook React.useMemo)
-    console.log('Component React.Memo - render')
+    console.log('parent component React.Memo - render')
 
     // const [count, setCount] = useState(0); //-> chuyển sang custom function
 

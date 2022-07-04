@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react'
 
 export default function ChildComponent({getData}) {
     const [comments, setComments] = useState([]);
-    console.log('Child Component React.useCallback - render')
+    console.log('child component useCallback - render')
 
     useEffect(() => {
         getData('commentsCallback')

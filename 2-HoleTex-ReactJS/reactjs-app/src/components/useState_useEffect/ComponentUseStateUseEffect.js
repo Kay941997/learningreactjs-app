@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 export default function ComponentUseStateUseEffect() { //!Funtional Component (Vote dùng)
-    console.log('Component React.useEffect - render')
+    console.log('component useEffect - render')
 
     const initalValues = () => {
         let total = 0;
@@ -20,6 +20,7 @@ export default function ComponentUseStateUseEffect() { //!Funtional Component (V
 
     const handleScroll = () => {
         setScrollPosition(window.scrollY);
+        console.log("Scroll")
     }
 
     const [count0, setCount0] = useState(() => { //!useState

@@ -24,7 +24,7 @@ $ npm i uuid (Optional) (uuid dành cho id)
     - const [ toDoList, setTodoList ] = useState([]);
     - const [num, setNum] = useState(0);
 # props - các dữ liệu được truyền từ phía bên ngoài: <ToDoList toDoList = { toDoList } />
-# useEffect - React Hook, thực hiện gọi API, thêm/xóa các event listener, thao tác DOM trực tiếp, gọi Web APIs setTimeout, setInterval, dùng để load dữ liệu từ localStorage, Database:
+# useEffect - React Hook,  thực hiện gọi API, thêm/xóa các event listener, thao tác DOM trực tiếp, gọi Web APIs setTimeout, setInterval, dùng để load dữ liệu từ localStorage, Database:
     - componentDidMount - thực hiện 1 lần duy nhất, không truyền dependency vào []
     - componentDidUpdate - truyền dependency vào [], hoạt động giống như 1 lifecycle
     - componentWillUnmount - để làm nhẹ đi performance
@@ -37,7 +37,7 @@ $ npm i uuid (Optional) (uuid dành cho id)
                     };
                 }, [])
     - truyền giá trị [todoList, textInput] thì khi giá trị thay đổi, useEffect sẽ chạy lại
-# useMemo - React Hook, tăng perfomance nhưng cần bộ nhớ nên ko được dùng tùy tiện
+# useMemo - React Hook, ghi nhớ lại kết quả trả về, nếu dữ liệu ko thay đổi thì ko thực thi lại nữa, lấy từ trong bộ nhớ ra, tăng perfomance nhưng cần bộ nhớ nên ko được dùng tùy tiện
     -   const [num, setNum] = useState(20);
         const number = useMemo(() => {
             return expensiveFunction(num); 
@@ -46,7 +46,42 @@ $ npm i uuid (Optional) (uuid dành cho id)
 
 # React.memo - khác hook useMemo, cũng tốn dung lượng, chỉ sử dụng khi component parent có props, để tối ưu hóa ko cần sử dụng React.memo ở component child -> ta custom 1 function làm component ở component parent rồi gắn vào trong component parent
  
-# useRef - React Hook, giúp lưu trữ 1 tham chiếu, và để truy xuất các thành phần DOM
+# useRef - React Hook, giúp lưu trữ 1 tham chiếu, và để truy xuất các thành phần DOM, useRef - lúc render giữ lại giá trị trước đó, ko tạo lại giá trị, useState khác useRef, khi giá trị thay đổi, useState render lại, useRef ko render lại, giải quyết vấn đề Stale Closure khi useState ko thay đổi giá trị còn useRef thay đổi giá trị
+    - Tìm hiểu Stable Closure
+    -   const countRef = useRef(0);
+        const [countState, setCountState] = useState(0);
+        const obj = {
+            current: 0
+        }
+
+        const handleClick = () => {
+            // setCountState(countState + 1); //todo: useState - thay đổi giá trị sẽ render lại
+            countRef.current = countRef.current + 1; //todo: useRef - thay đổi giá trị sẽ ko render lại
+            obj.current = obj.current + 1; //todo: obj - tạo lại giá trị ban đầu = 0
+        }
+
+# useReducer - React Hook, dùng đối với những useState phức tạp, phổ biến trong trường hợp Loading... dữ liệu:
+- Phải nắm khái niệm ACTION - VIEW - REDUCERS
+    + ACTION 'ADD_NEW_ITEM'
+
+    + VIEW: Nhấn lên 1 button dispatch('ADD_NEW_ITEM')
+
+    + REDUCERS (state, action) => {
+        switch(action) {
+            case 'ADD_NEW_ITEM':
+                state = state + 1;
+            case 'ABC':
+        }
+    }
+- Dùng sẽ tạo ra 1 cái kho chứa các useState khác nhau
+    const initStateUser = {
+        loading: false,
+        date: [],
+        error: null
+    }
+
+
+   
 
 
 
@@ -298,6 +333,186 @@ return (
         <ComponentReactMemo></ComponentReactMemo>   
     </>
 )
+
+
+# useRef: (lưu giá trị trước đó, giải quyết Stale Closure của useState ko tự tăng, truy xuất DOM)
+- ComponentUseRef.js:
+import React, {useRef} from 'react';
+import { useState, useEffect } from 'react';
+
+function ComponentUseRef() {
+    console.log('component useRef - render');
+
+    //!Bài toán 1: (useRef giữ lại giá trị trước đó, giải quyết Stale Closure)
+    const countRef = useRef(0); //!useRef - lúc render giữ lại giá trị trước đó, ko tạo lại giá trị
+    const [countState, setCountState] = useState(0); //!useState khác useRef, khi giá trị thay đổi, useState render lại, useRef ko render lại
+    const obj = { //!obj khác useRef vì lúc render sẽ tạo lại giá trị ban đầu mới là 0
+        current: 0
+    }
+
+    const handleClick = () => { //!so sánh cả 3 phương án useRef, obj, useState:
+        // setCountState(countState + 1); //todo: useState - thay đổi giá trị sẽ render lại
+        countRef.current = countRef.current + 1; //todo: useRef - thay đổi giá trị sẽ ko render lại
+        obj.current = obj.current + 1; //todo: obj - tạo lại giá trị ban đầu = 0
+    }   
+
+    useEffect(() => { //!Vấn đề về Stale Closure khi dùng useState, đó là count ko tăng lên +1, luôn trả về 0
+        setInterval(() => {
+            setCountState(countState + 1);
+            console.log('useState bị stale closure, count không tự tăng');
+            console.log({countState});
+        }, 100000);
+    }, []);
+
+    useEffect(() => { //!useRef giải quyết vấn đề Stale Closure
+        setInterval(() => {
+            countRef.current = countRef.current + 1;
+            console.log('useRef giải quyết stale closure, count tự tăng');
+            console.log({countRef: countRef.current});
+        }, 100000);
+    }, []);
+
+
+    //!Bài toán 2: (useRef truy xuất các thành phần DOM)
+    const ref = useRef(null);
+    console.log(ref, 'Input text');
+    useEffect(() => {
+        ref.current.focus(); //tự động focus
+    }, []) //[] -> gọi 1 lần duy nhất
+
+    return (
+        <>
+            <input type='text' ref={ref}></input>
+            <button onClick={handleClick}>Click Button</button>
+        </>
+    )
+}
+
+export default ComponentUseRef;
+
+
+# useReducer - React Hook, dùng đối với những useState phức tạp, phổ biến trong trường hợp Loading... dữ liệu:
+import React, { useReducer } from 'react'
+
+const reducer1 = (state, action) => {
+    switch(action) {
+        case 'TANG':
+            return state + 1;
+        case 'GIAM':
+            return state - 1;
+        case 'XOA TAT CA':
+            return 0;
+        default:
+            return state;
+    }
+};
+
+const reducer2 = (state, action) => {
+    switch(action.type) {
+        case 'GAN GIA TRI':
+            return action.data;
+        default:
+            return state;
+    }
+}
+
+const initStateUser = {
+    loading: false,
+    date: [],
+    error: null
+}
+
+const userReducer1 = (state, action) => {
+    switch(action.type) {
+        case 'GET USER REQUEST':
+            return {
+                ...state,
+                loading: true,
+            }
+        case 'GET USER SUCCESS':
+            return {
+                ...state,
+                loading: false,
+                data: action.data,
+            }
+        case 'GET USER ERROR':
+            return {
+                ...state,
+                data: [],
+                error: action.data,
+            }
+        default:
+            return state;
+    }
+}
+
+export default function ComponentUseReducer() {
+    const [count1, dispatch1] = useReducer(reducer1, 0);
+    const [count2, dispatch2] = useReducer(reducer2, 0); 
+    const [user1, userDispatch1] = useReducer(userReducer1, initStateUser );
+
+    const getUsers = () => {
+        userDispatch1({
+            type: 'GET USER REQUEST'
+        });
+
+        setTimeout(() => {
+            fetch('https://reqres.in/api/users')
+            .then(res => res.json())
+            .then(res => {
+                userDispatch1({
+                    type: 'GET USER SUCCESS',
+                    data: res,
+                });
+            })
+            .catch(err => {
+                userDispatch1({
+                    type: 'GET USER ERROR',
+                    data: err,
+                })
+            })
+        }, 2000)
+         
+    }
+
+
+    return (
+        <>
+            <p>Count1: {count1}</p>
+            <button onClick={() => dispatch1('TANG')}>Tang</button>
+            <button onClick={() => dispatch1('GIAM')}>Giam</button>  
+            <button onClick={() => dispatch1('XOA TAT CA')}>Xoa het du lieu</button>  
+
+            <p>Count2: {count2}</p>
+            <button onClick={() => dispatch2({
+                type: 'GAN GIA TRI',
+                data: 10
+            })}>Gan gia tri</button>
+
+            <p>User1:</p>
+            <button onClick={getUsers}>Get Users</button>
+            {user1.loading ? <p>Loading...</p> : <p>{JSON.stringify(user1)}</p> }
+        </>
+    );
+}
+
+/* 
+    useReducer: phải nắm khái niệm ACTION - VIEW - REDUCERS
+    
+    ACTION 'ADD_NEW_ITEM'
+
+    VIEW: Nhấn lên 1 button dispatch('ADD_NEW_ITEM')
+
+    REDUCERS (state, action) => {
+        switch(action) {
+            case 'ADD_NEW_ITEM':
+                state = state + 1;
+            case 'ABC':
+        }
+    }
+*/
+
+
 
 
 # Code:
